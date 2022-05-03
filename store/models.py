@@ -19,11 +19,12 @@ class Product(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)  # eg 9999.99
-    inventory = models.IntegerField()
-    # gives current date time update
+    inventory = models.IntegerField()  
     last_update = models.DateTimeField(auto_now=True)
+    # gives current date time update
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
+    
 
 
 class Customer(models.Model):
@@ -92,3 +93,6 @@ class Address(models.Model):
     customer = models.OneToOneField(
         Customer, on_delete=models.CASCADE, primary_key=True)
     # OneToOneField --> because 1 address = 1 customer and CASCADE = wheb customer is deleted address is deleted too.
+
+    class Meta:
+        verbose_name_plural = "Address"

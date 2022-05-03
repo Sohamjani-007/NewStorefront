@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<html>
+
+<body>
+    {{ topic }} of the World {{ true }}
+    {% if name %}
+    <h1>Hello {{ name }}</h1>
+    {% else %}
+    <h1>Hello World</h1>
+    {% endif %}
+    <ul>
+        {% for summary_credit_accnts_information in summary_accounts_credit %}
+        <li>{{ summary_credit_accnts_information }}</li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

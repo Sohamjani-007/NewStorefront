@@ -7,6 +7,7 @@ name = "pypi"
 django = "*"
 django-debug-toolbar = "*"
 pep8 = "*"
+jinja2 = "*"
 
 [dev-packages]
 autopep8 = "*"

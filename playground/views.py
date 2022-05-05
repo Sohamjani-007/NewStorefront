@@ -6,13 +6,17 @@ from django.db.models.functions import Concat
 from django.db.models.aggregates import Count, Avg, Max, Min, Sum
 from django.http import HttpResponse
 from store.models import Collection, Customer, Order, Product, OrderItem
+from django.contrib.contenttypes.models import ContentType
+from tags.models import TaggedItem, Tag
 
+from tags.models import TaggedItem
 
 # Create your views here.
 # request handler or action or request --> response
 
 
 def say_hello(request):
+
 
     soham = {'likes': 'pizza', 'place': "Joe's",
              'products': ['apple', 'banana', 'grapes', 'mangoes']}
@@ -113,9 +117,12 @@ def say_hello(request):
     #     F('orderitem__quantity'))).order_by('-top_five')[:5]
     # # Top 5 best-selling products and their total sales.
 
+
+    # content_type = ContentType.objects.get_for_model(Product)
+    # queryset = TaggedItem.objects.select_related('tag').filter(content_type = content_type,object_id=1)
     return render(request, 'hello.html', soham)
+    # return render(request, 'hello.html', soham, {'tags' : list(queryset)})
     # return render(request, 'hello.html', {'name': 'Soham', 'products': product})
 
 
-# test1 = {"context" : {"address": {"add1": "irani","add2": "wadi"},"customer_detail": {"name": "Soham","pan": "AJHSU12"  } }}
-# {"Credit acctount Summary" : {"Total number of acctounts	": {"Active acctounts": "","Closed acctounts": "wadi", 'SF/WD/WO/Settled':""},"customer_detail": {"name": "Soham","pan": "AJHSU12"  } }}
+

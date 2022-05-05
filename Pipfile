@@ -8,6 +8,7 @@ django = "*"
 django-debug-toolbar = "*"
 pep8 = "*"
 jinja2 = "*"
+pylint-django = "*"
 
 [dev-packages]
 autopep8 = "*"

@@ -53,32 +53,33 @@ def storage(request):
                                        {"accounts": "two", "credit_lender": "Pending", "credit_type": "CREDIT CARD", "credit_acctnum": "XXXX987", "credit_ownership": "Individual",
                                         "credit_datereported": "12-3-2022", "credit_accntstatus": "Pending", "credit_opendate": "12-3-2022",
                                         "credit_sanct_highest": "20,000", "credit_currentbalance": "10,000", "credit_ammntoverdue": "0"}],
+                                        
         "credit_accnt_information_details": [{
             "header": {"credit_accounts": "Acct 1", "bank_name": "Indian Bank", "name": "Jos Butler", "address1": " England"},
             "credit_account_details":
-            {"credit_account_number": "12345", #
-             "credit_dateopen": "23-12-2019", #
-             "credit_dateclose": "12-3-2021",#
-             "credit_ownership": "Individual",
-             "credit_roi": "9000",#
-             "credit_voc": "None",#
-             "credit_toc": "none",#
-             "suitfiled_wil_def_writeoff_status": "20000", #
-             "credit_date_reported": "21-4-2021",#
-             "credit_loan_type": "CREDIT CARD",#
-             "credit_accnt_status": "SD/WO/WD/SETTLED", #
-             "credit_highest": "50,000", #
-             "credit_current_balance": "12,000", #
-             "credit_amt_overdue": "2,450",#
-             "credit_last_paymt_date": "16-3-2020", 
-             "credit_willfull_default": "None",
-             "credit_limit_amt": "2000",#
-             "credit_emi": "7000",
-             "credit_repay_tenure": "1200",#
-             "credit_total_writeoff_amt": "4000",
-             "credit_principle_writeoff": "500",
-             "credit_settlement_amt": "3000",#
-             "credit_written_status": "None" #
+            {"credit_account_number": "12345", # Account Number	
+             "credit_dateopen": "23-12-2019", # Date Opened	
+             "credit_dateclose": "12-3-2021",# Date Closed	new_credit_cais_dict
+             "credit_ownership": "Individual", # Ownership X FIND IT new_credit_cais_dict
+             "credit_roi": "9000",# Rate of Interest	new_credit_cais_dict
+             "credit_voc": "None",# Value of Collateral	new_credit_cais_dict
+             "credit_toc": "none",# Type of Collateral	new_credit_cais_dict
+             "suitfiled_wil_def_writeoff_status": "20000", # SuitFiled Willful Default WrittenOff Status	new_credit_cais_dict
+             "credit_date_reported": "21-4-2021",# Date Reported	new_credit_cais_dict
+             "credit_loan_type": "CREDIT CARD",# Loan Type	
+             "credit_accnt_status": "SD/WO/WD/SETTLED", # Account Status	
+             "credit_highest": "50,000", # Highest Credit	
+             "credit_current_balance": "12,000", # Current Balance	
+             "credit_amt_overdue": "2,450",# Amount Overdue	
+             "credit_last_paymt_date": "16-3-2020", # Last Payment Date	new_credit_cais_dict
+             "credit_willfull_default": "None", # SuitFiled Willful Default	new_credit_cais_dict
+             "credit_limit_amt": "2000", # Credit Limit Amt new_credit_cais_dict
+             "credit_emi": "7000", # EMI new_credit_cais_dict
+             "credit_repay_tenure": "1200",# Repayment Tenure	new_credit_cais_dict
+             "credit_total_writeoff_amt": "4000", # Total Write-off Amt	new_credit_cais_dict
+             "credit_principle_writeoff": "500", # Principal Write-off	new_credit_cais_dict
+             "credit_settlement_amt": "3000",# Settlement Amt	new_credit_cais_dict
+             "credit_written_status": "None" # Written off Settled Status	new_credit_cais_dict
              },
             "payment_history": [{
                 "year": "2011",

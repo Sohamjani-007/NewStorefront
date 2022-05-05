@@ -1,6 +1,8 @@
+from itertools import groupby
 import json
 from multiprocessing import context
-from telnetlib import PRAGMA_HEARTBEAT
+from random import sample
+from pkg_resources import safe_extra
 import xmltodict
 from store.views import storage
 import datetime
@@ -2961,7 +2963,7 @@ sample_response = {
                     "Account_Type": "10",  # credit_type
                     "Open_Date": "19980522",  # credit_opendate
                     "Credit_Limit_Amount": "50000",  # credit_limit_amt
-                    "Highest_Credit_or_Original_Loan_Amount": "50000",  # credit_highest
+                    "Highest_Credit_or_Original_Loan_Amount": "50000",  # credit_sanct_highest
                     "Terms_Duration": None,
                     "Terms_Frequency": None,
                     "Scheduled_Monthly_Payment_Amount": None,
@@ -2975,17 +2977,18 @@ sample_response = {
                     "Date_Reported": "20180315",  # credit_datereported
                     "Date_of_First_Delinquency": None,
                     "Date_Closed": None,  # credit_dateclose
-                    "Date_of_Last_Payment": None,
+                    "Date_of_Last_Payment": None,  # credit_last_paymt_date
+                    # suitfiled_wil_def_writeoff_status
                     # suitfiled_wil_def_writeoff_status
                     "SuitFiledWillfulDefaultWrittenOffStatus": None,
                     "Written_off_Settled_Status": "00",  # credit_written_status
                     "Value_of_Credits_Last_Month": None,
                     "Occupation_Code": None,
-                    "Settlement_Amount": None,
+                    "Settlement_Amount": None,  # credit_settlement_amt
                     "Value_of_Collateral": None,  # credit_voc
                     "Type_of_Collateral": None,  # credit_toc
-                    "Written_Off_Amt_Total": None,
-                    "Written_Off_Amt_Principal": None,
+                    "Written_Off_Amt_Total": None,  # credit_total_writeoff_amt
+                    "Written_Off_Amt_Principal": None,  # credit_principle_writeoff
                     "Rate_of_Interest": None,  # credit_roi
                     "Repayment_Tenure": "0",  # credit_repay_tenure
                     "Promotional_Rate_Flag": None,
@@ -3001,16 +3004,16 @@ sample_response = {
                     "Consumer_comments": None,
                     "AccountHoldertypeCode": "1",
                     "CAIS_Account_History": {
-                        "Year": "2018", # year
+                        "Year": "2018",  # year
                         "Month": "03",
-                        "Days_Past_Due": "14", # description
+                        "Days_Past_Due": "14",  # description
                         "Asset_Classification": "?"
                     },
                     "CAIS_Holder_Details": {
                         "Surname_Non_Normalized": "DARSHAN",  # name
                         "First_Name_Non_Normalized": "RAUT",  # name
                         "Middle_Name_1_Non_Normalized": None,
-                        "Middle_Name_2_Non_Normalized": None,
+                        "Middle_Name_2_Non_NormalCAIS_Account_Historyized": None,
                         "Middle_Name_3_Non_Normalized": None,
                         "Alias": None,
                         "Gender_Code": "1",  # gender
@@ -3032,36 +3035,36 @@ sample_response = {
                         "Residence_code_non_normalized": None
                     },
                     "CAIS_Holder_Phone_Details": {
-                        "Telephone_Number": "9987217355",  # telephone
-                        "Telephone_Type": None,
-                        "Telephone_Extension": None,
-                        "Mobile_Telephone_Number": None,
+                        "Telephone_Number": "9987217355",  # consumer_mob1
+                        "Telephone_Type": None,  # consumer_ptype1
+                        "Telephone_Extension": None,  # consumer_extent1
+                        "Mobile_Telephone_Number": None,  # consumer_pnum1
                         "FaxNumber": None,
                         "EMailId": None  # email
                     },
                     "CAIS_Holder_ID_Details": {
-                        "Income_TAX_PAN": "BQGPM4004M",
-                        "PAN_Issue_Date": None,
-                        "PAN_Expiration_Date": None,
-                        "Passport_Number": None,
-                        "Passport_Issue_Date": None,
-                        "Passport_Expiration_Date": None,
-                        "Voter_ID_Number": None,
-                        "Voter_ID_Issue_Date": None,
-                        "Voter_ID_Expiration_Date": None,
-                        "Driver_License_Number": None,
-                        "Driver_License_Issue_Date": None,
-                        "Driver_License_Expiration_Date": None,
-                        "Ration_Card_Number": None,
-                        "Ration_Card_Issue_Date": None,
-                        "Ration_Card_Expiration_Date": None,
-                        "Universal_ID_Number": None,
-                        "Universal_ID_Issue_Date": None,
-                        "Universal_ID_Expiration_Date": None,
+                        "Income_TAX_PAN": "BQGPM4004M",  # consumer_panid
+                        "PAN_Issue_Date": None,  # consumer_pan_doi
+                        "PAN_Expiration_Date": None,  # consumer_pan_doe
+                        "Passport_Number": None,  # consumer_passprtid
+                        "Passport_Issue_Date": None,  # consumer_passprt_doi
+                        "Passport_Expiration_Date": None,  # consumer_passprt_doe
+                        "Voter_ID_Number": None,  # consumer_voterid
+                        "Voter_ID_Issue_Date": None,  # consumer_voter_doi
+                        "Voter_ID_Expiration_Date": None,  # consumer_voter_doe
+                        "Driver_License_Number": None,  # consumer_drivinid
+                        "Driver_License_Issue_Date": None,  # consumer_drivin_doi
+                        "Driver_License_Expiration_Date": None,  # consumer_drivin_doe
+                        "Ration_Card_Number": None,  # consumer_rationid
+                        "Ration_Card_Issue_Date": None,  # consumer_ration_doi
+                        "Ration_Card_Expiration_Date": None,  # consumer_ration_doe
+                        "Universal_ID_Number": None,  # consumer_adhrid
+                        "Universal_ID_Issue_Date": None,  # consumer_adhr_doi
+                        "Universal_ID_Expiration_Date": None,  # consumer_adhr_doe
                         "EMailId": None
                     },
                     "Account_Review_Data": {
-                        "Year": "2018",  
+                        "Year": "2018",
                         "Month": "3",
                         "Account_Status": "53",
                         "Actual_Payment_Amount": "2500",
@@ -5727,6 +5730,41 @@ sample_response = {
 }
 
 
+def get_payment_history(input_data):
+    # define a fuction for key
+    def key_func(k):
+        return k['Year']
+
+    output_data_v1 = []
+    for key, value in groupby(input_data, key_func):
+        output_dict = dict(year=key)
+        for input_dict in list(value):
+            month = input_dict.get("Month")
+            month_name = datetime.datetime.strptime(
+                month, "%m").strftime("%b").lower()
+            days_past_due = input_dict.get("Days_Past_Due")
+            output_dict[str(month_name)] = days_past_due
+        output_data_v1.append(output_dict)
+
+    # monthnames starting from jan [1:] Index=1
+    month_long_name_list = calendar.month_name[1:]
+    month_short_name_list = list()  # created empty list
+    for month_long_name in month_long_name_list:
+        short_name = datetime.datetime.strptime(month_long_name, '%B').strftime(
+            '%b').lower()  # converted to short_name and lower() letters
+        month_short_name_list.append(short_name)  # added into list
+
+    final_output = []  # empty list
+    for output_data_dict in output_data_v1:  # in above
+        for month_short_name in month_short_name_list:
+            if month_short_name not in output_data_dict.keys():
+                # if month_short_name != days_past_due , add 0
+                output_data_dict[month_short_name] = "0"
+        final_output.append(output_data_dict)  # added into final_output
+
+    return final_output
+
+
 def convert_to_html_request():
     json_data = get_json_data()
     request_data = json_data.get("INProfileResponse")
@@ -5738,7 +5776,6 @@ def convert_to_html_request():
     experian_reportnum = credit_profile.get("ReportNumber")
     experian_report_created = credit_profile.get("ReportDate")
     unique_transaction_id = credit_profile.get("UniqueID")
-
     credit_customer = request_data.get("Current_Application")
     current_application_details = credit_customer.get(
         "Current_Application_Details")
@@ -5768,7 +5805,8 @@ def convert_to_html_request():
     credit_total = credit_account.get("CreditAccountTotal")
     credit_active = credit_account.get("CreditAccountActive")
     credit_closed = credit_account.get("CreditAccountClosed")
-    credit_suitfiled_current_balance = credit_account.get("CADSuitFiledCurrentBalance")
+    credit_suitfiled_current_balance = credit_account.get(
+        "CADSuitFiledCurrentBalance")
 
     credit_account = cais_credit_summary.get("Total_Outstanding_Balance")
     credit_secured_current = credit_account.get("Outstanding_Balance_Secured")
@@ -5776,131 +5814,153 @@ def convert_to_html_request():
         "Outstanding_Balance_UnSecured")
     credit_total_current = credit_account.get("Outstanding_Balance_All")
 
-
-
-    credit_cais_details = cais_credit_account.get("CAIS_Account_DETAILS")
-    credit_cais_details_list = []
-    for credit_cais_dict in credit_cais_details:
-        new_credit_cais_dict = {
-            "credit_lender": credit_cais_dict.get("Subscriber_Name"),
-            "credit_acctnum": credit_cais_dict.get("Account_Number"),
-            "credit_type": credit_cais_dict.get("Account_Type"),
-            "credit_dateopen": credit_cais_dict.get("Open_Date"),
-            "credit_limit_amt": credit_cais_dict.get("Credit_Limit_Amount"),
-            "credit_highest": credit_cais_dict.get("Highest_Credit_or_Original_Loan_Amount"),
-            "credit_accnt_status": credit_cais_dict.get("Account_Status"),
-            "credit_current_balance": credit_cais_dict.get("Current_Balance"),
-            "credit_amt_overdue": credit_cais_dict.get("Amount_Past_Due"),
-            "credit_date_reported": credit_cais_dict.get("Date_Reported"),
-            "credit_dateclose": credit_cais_dict.get("Date_Closed"),
-            "suitfiled_wil_def_writeoff_status": credit_cais_dict.get("SuitFiledWillfulDefaultWrittenOffStatus"),
-            "credit_written_status": credit_cais_dict.get("Written_off_Settled_Status"),
-            "credit_voc": credit_cais_dict.get("Value_of_Collateral"),
-            "credit_toc": credit_cais_dict.get("Type_of_Collateral"),
-            "credit_roi": credit_cais_dict.get("Rate_of_Interest"),
-            "credit_repay_tenure": credit_cais_dict.get("Repayment_Tenure"),
+    credit_summary_details = cais_credit_account.get("CAIS_Account_DETAILS")
+    credit_summary_details_list = []
+    for credit_summary_dict in credit_summary_details:
+        new_credit_summary_dict = {
+            # credit_lender given in both
+            "credit_lender": credit_summary_dict.get("Subscriber_Name"),
+            # credit_acctnum given in both
+            "credit_acctnum": credit_summary_dict.get("Account_Number"),
+            # credit_type given in both
+            "credit_type": credit_summary_dict.get("Account_Type"),
+            # credit_opendate given in both
+            "credit_dateopen": credit_summary_dict.get("Open_Date"),
+            # credit_sanct_highest and credit_highest both are same. given in both
+            "credit_highest": credit_summary_dict.get("Highest_Credit_or_Original_Loan_Amount"),
+            # credit_accntstatus 53
+            "credit_accnt_status": credit_summary_dict.get("Account_Status"),
+            # credit_currentbalance given in both
+            "credit_current_balance": credit_summary_dict.get("Current_Balance"),
+            # credit_ammntoverdue given in both
+            "credit_amt_overdue": credit_summary_dict.get("Amount_Past_Due"),
+            # credit_datereported given in both.
+            "credit_date_reported": credit_summary_dict.get("Date_Reported"),
+            # credit_sanct_highest
+            "credit_sanct_highest": credit_summary_dict.get("Highest_Credit_or_Original_Loan_Amount")
 
         },
-    cais_account_history = credit_cais_details[4]
-    # cais_account_year = cais_account_history.get("Year")
-    cais_account_month = cais_account_history.get("Month")
-    month = datetime.datetime.now()
-    currentmonth = month.strftime("%m")
-    
-    # days_past_due = cais_account_history.get("Days_Past_Due")
-    cais_account_month_list = []
 
+        credit_acct_information = cais_credit_account.get(
+            "CAIS_Account_DETAILS")
+        credit_cais_details_list = []
+        for credit_cais_dict in credit_acct_information:
+            new_credit_cais_dict = {
+                "credit_dateclose": credit_cais_dict.get("Date_Closed"),
+                "suitfiled_wil_def_writeoff_status": credit_cais_dict.get("SuitFiledWillfulDefaultWrittenOffStatus"),
+                "credit_written_status": credit_cais_dict.get("Written_off_Settled_Status"),
+                "credit_voc": credit_cais_dict.get("Value_of_Collateral"),
+                "credit_toc": credit_cais_dict.get("Type_of_Collateral"),
+                "credit_roi": credit_cais_dict.get("Rate_of_Interest"),
+                "credit_repay_tenure": credit_cais_dict.get("Repayment_Tenure"),
+                "credit_limit_amt": credit_cais_dict.get("Credit_Limit_Amount"),
+                "credit_settlement_amt": credit_cais_dict.get("Settlement_Amount"),
+                "credit_principle_writeoff": credit_cais_dict.get("Written_Off_Amt_Principal"),
+                "credit_total_writeoff_amt": credit_cais_dict.get("Written_Off_Amt_Total"),
+                "credit_emi": credit_cais_dict.get(""),
+                "credit_willfull_default": credit_cais_dict.get(""),
+                "credit_last_paymt_date": credit_cais_dict.get("Date_of_Last_Payment")
 
+            },
 
-    
+        holder_details = cais_credit_account.get("CAIS_Account_DETAILS")
+        for holder in holder_details:
+            get_holder_details = holder.get("CAIS_Holder_Details")
+            new_holder_dict = {
+                "consumer_dob": get_holder_details.get("Date_of_birth"),
+                "consumer_gender": get_holder_details.get("Gender_Code"),
+                "consumer_occupation": get_holder_details.get(""),
+                "consumer_address": get_holder_details.get(""),
+                "consumer_panid": get_holder_details.get("Income_TAX_PAN"),
 
+            }
 
-    
-    
+        credit_holder_phone = cais_credit_account.get("CAIS_Account_DETAILS")
+        for telecontact in credit_holder_phone:
+            holder_phone_details = telecontact.get("CAIS_Holder_Phone_Details")
+            new_telecontact_dict = {
+                "consumer_mob1": holder_phone_details.get("Telephone_Number"),
+                "consumer_ptype1": holder_phone_details.get("Telephone_Type"),
+                "consumer_extent1": holder_phone_details.get("Telephone_Extension"),
+                "consumer_pnum1": holder_phone_details.get("Mobile_Telephone_Number"),
 
-    # january = "jan"
-    # datetime_object = datetime.datetime.strptime(january, "%b")
-    # january_month = datetime_object.month
+            },
 
-    # febuary = "feb"
-    # datetime_object = datetime.datetime.strptime(febuary, "%b")
-    # febuary_month = datetime_object.month
-
-    # march = "mar"
-    # datetime_object = datetime.datetime.strptime(march, "%b")
-    # march_month = datetime_object.month
-
-    # april = "apr"
-    # datetime_object = datetime.datetime.strptime(april, "%b")
-    # april_month = datetime_object.month
-
-    # may = "may"
-    # datetime_object = datetime.datetime.strptime(may, "%b")
-    # may_month = datetime_object.month
-
-    # june = "jun"
-    # datetime_object = datetime.datetime.strptime(june, "%b")
-    # june_month = datetime_object.month
-
-    # july = "jul"
-    # datetime_object = datetime.datetime.strptime(july, "%b")
-    # july_month = datetime_object.month
-
-    # august = "aug"
-    # datetime_object = datetime.datetime.strptime(august, "%b")
-    # august_month = datetime_object.month
-
-    # september = "sep"
-    # datetime_object = datetime.datetime.strptime(september, "%b")
-    # september_month = datetime_object.month
-
-    # october = "oct"
-    # datetime_object = datetime.datetime.strptime(october, "%b")
-    # october_month = datetime_object.month
-
-    # november = "nov"
-    # datetime_object = datetime.datetime.strptime(november, "%b")
-    # november_month = datetime_object.month
-
-    # december = "dec"
-    # datetime_object = datetime.datetime.strptime(december, "%b")
-    # december_month = datetime_object.month
-    
-
-
-    # month_list = [january_month,febuary_month, march_month, april_month, may_month, june_month, july_month, august_month, september_month, october_month, november_month, december_month]
-    # months_dict = {"Months": month_list}
-    
+        credit_holder_id = cais_credit_account.get("CAIS_Account_DETAILS")
+        for consumer_id in credit_holder_id:
+            holder_id_details = consumer_id.get("CAIS_Holder_ID_Details")
+            if isinstance(holder_id_details, dict):
+                new_consumer_details_dict = {
+                    "consumer_panid": holder_id_details.get("Income_TAX_PAN"),
+                    "consumer_pan_doi": holder_id_details.get("PAN_Issue_Date"),
+                    "consumer_pan_doe": holder_id_details.get("PAN_Expiration_Date"),
+                    "consumer_passprtid": holder_id_details.get("Passport_Number"),
+                    "consumer_passprt_doi": holder_id_details.get("Passport_Issue_Date"),
+                    "consumer_passprt_doe": holder_id_details.get("Passport_Expiration_Date"),
+                    "consumer_voterid": holder_id_details.get("Voter_ID_Number"),
+                    "consumer_voter_doi": holder_id_details.get("Voter_ID_Issue_Date"),
+                    "consumer_voter_doe": holder_id_details.get("Voter_ID_Expiration_Date"),
+                    "consumer_adhrid": holder_id_details.get("Universal_ID_Number"),
+                    "consumer_adhr_doi": holder_id_details.get("Universal_ID_Issue_Date"),
+                    "consumer_adhr_doe": holder_id_details.get("Universal_ID_Expiration_Date"),
+                    "consumer_drivinid": holder_id_details.get("Driver_License_Number"),
+                    "consumer_drivin_doi": holder_id_details.get("Driver_License_Issue_Date"),
+                    "consumer_drivin_doe": holder_id_details.get("Driver_License_Expiration_Date"),
+                    "consumer_rationid": holder_id_details.get("Ration_Card_Number"),
+                    "consumer_ration_doi": holder_id_details.get("Ration_Card_Issue_Date"),
+                    "consumer_ration_doe": holder_id_details.get("Ration_Card_Expiration_Date")
+                }
+            elif isinstance(holder_id_details, list):
+                for holder_id_details_dict in holder_id_details:
+                    new_consumer_details_dict = {
+                        "consumer_panid": holder_id_details_dict.get("Income_TAX_PAN"),
+                        "consumer_pan_doi": holder_id_details_dict.get("PAN_Issue_Date"),
+                        "consumer_pan_doe": holder_id_details_dict.get("PAN_Expiration_Date"),
+                        "consumer_passprtid": holder_id_details_dict.get("Passport_Number"),
+                        "consumer_passprt_doi": holder_id_details_dict.get("Passport_Issue_Date"),
+                        "consumer_passprt_doe": holder_id_details_dict.get("Passport_Expiration_Date"),
+                        "consumer_voterid": holder_id_details_dict.get("Voter_ID_Number"),
+                        "consumer_voter_doi": holder_id_details_dict.get("Voter_ID_Issue_Date"),
+                        "consumer_voter_doe": holder_id_details_dict.get("Voter_ID_Expiration_Date"),
+                        "consumer_adhrid": holder_id_details_dict.get("Universal_ID_Number"),
+                        "consumer_adhr_doi": holder_id_details_dict.get("Universal_ID_Issue_Date"),
+                        "consumer_adhr_doe": holder_id_details_dict.get("Universal_ID_Expiration_Date"),
+                        "consumer_drivinid": holder_id_details_dict.get("Driver_License_Number"),
+                        "consumer_drivin_doi": holder_id_details_dict.get("Driver_License_Issue_Date"),
+                        "consumer_drivin_doe": holder_id_details_dict.get("Driver_License_Expiration_Date"),
+                        "consumer_rationid": holder_id_details_dict.get("Ration_Card_Number"),
+                        "consumer_ration_doi": holder_id_details_dict.get("Ration_Card_Issue_Date"),
+                        "consumer_ration_doe": holder_id_details_dict.get("Ration_Card_Expiration_Date")
+                    }
 
     cais_noncredit_account = request_data.get("NonCreditCAPS")
-    noncredit_account_summary = cais_noncredit_account.get("NonCreditCAPS_Summary")
-    noncredit_7days_caps = noncredit_account_summary.get("NonCreditCAPSLast7Days")
-    noncredit_30days_caps = noncredit_account_summary.get("NonCreditCAPSLast30Days")
-    noncredit_90days_caps = noncredit_account_summary.get("NonCreditCAPSLast90Days")
-    noncredit_180days_caps = noncredit_account_summary.get("NonCreditCAPSLast180Days")
+    noncredit_account_summary = cais_noncredit_account.get(
+        "NonCreditCAPS_Summary")
+    noncredit_7days_caps = noncredit_account_summary.get(
+        "NonCreditCAPSLast7Days")
+    noncredit_30days_caps = noncredit_account_summary.get(
+        "NonCreditCAPSLast30Days")
+    noncredit_90days_caps = noncredit_account_summary.get(
+        "NonCreditCAPSLast90Days")
+    noncredit_180days_caps = noncredit_account_summary.get(
+        "NonCreditCAPSLast180Days")
 
-
-
-
-
+    credit_summary_details_list.append(new_credit_summary_dict)
     credit_cais_details_list.append(new_credit_cais_dict)
-    cais_account_month_list.append(currentmonth)
-    # account_review_list.append(new_review_data_dict)
+    contact_and_id = [new_telecontact_dict,
+                      new_consumer_details_dict, new_holder_dict]
+
 
     html_request = [{
-
-
         "experian_credit_score": {
             "credit_score": credit_score,
             "bureau_score_confid_level": credit_confid_level
         },
-
         "experian_credit_report": {
             "experian_credit_ern": experian_reportnum,
             "report_created": experian_report_created,
             "unique_transaction_id": unique_transaction_id
         },
-
         "customer_detail": {
             "fname": first_name,
             "lname": last_name,
@@ -5916,7 +5976,6 @@ def convert_to_html_request():
             "ration_no": ration_num
 
         },
-
         "report_summary": {
             "total_credit": credit_total,
             "active_credit": credit_active,
@@ -5928,20 +5987,12 @@ def convert_to_html_request():
             "noncredit_inquiry_7": noncredit_7days_caps,
             "noncredit_inquiry_30": noncredit_30days_caps,
             "noncredit_inquiry_90": noncredit_90days_caps,
-            "noncredit_inquiry_180": noncredit_180days_caps 
+            "noncredit_inquiry_180": noncredit_180days_caps
         },
-
-
+        "summary_credit_accnts_info": credit_summary_details_list,
         "credit_accnt_information_details": credit_cais_details_list,
-        "payment_history" : cais_account_month_list
-        
+        "consumer_details_credit_accnt": contact_and_id
 
-
-
-
-
-
-       
     }]
 
     print(html_request, "Well done")

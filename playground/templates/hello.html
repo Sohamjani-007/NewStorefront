@@ -7,13 +7,9 @@
     {% else %}
     <h1>Hello World</h1>
     {% endif %}
-    <ul>
-        {% for summary_credit_accnts_informationrmation in summary_credit_accnts_information %}
-        <li>{{ summary_credit_accnts_information }}</li>
-        {% endfor %}
-        {% for product in products %}
-        <li>{{ product }}</li>
-        {% endfor %}
+    {% for product in products %}
+    <li>{{ product }}</li>
+    {% endfor %}
     </ul>
 </body>
 

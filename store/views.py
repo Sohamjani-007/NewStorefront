@@ -54,9 +54,10 @@ def storage(request):
                                         "credit_datereported": "12-3-2022", "credit_accntstatus": "Pending", "credit_opendate": "12-3-2022",
                                         "credit_sanct_highest": "20,000", "credit_currentbalance": "10,000", "credit_ammntoverdue": "0"}],
                                         
-        "credit_accnt_information_details": [{
+        "credit_accnt_information_details": [
+            {
             "header": {"credit_accounts": "Acct 1", "bank_name": "Indian Bank", "name": "Jos Butler", "address1": " England"},
-            "credit_account_details":
+            "credit_account_details":   
             {"credit_account_number": "12345", # Account Number	
              "credit_dateopen": "23-12-2019", # Date Opened	
              "credit_dateclose": "12-3-2021",# Date Closed	new_credit_cais_dict

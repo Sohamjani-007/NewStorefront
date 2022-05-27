@@ -28,7 +28,7 @@ class Product(models.Model):
 
 
 class Customer(models.Model):
-    MEMBERSHIP_BRONZE = "B"          # deafult = "BRONZE"
+    MEMBERSHIP_BRONZE = "B"          # default = "BRONZE"
     MEMBERSHIP_SILVER = "S"
     MEMBERSHIP_GOLD = "G"
 

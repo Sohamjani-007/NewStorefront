@@ -21,7 +21,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('playground/', include('playground.urls')),
     path('store/', include('store.urls')),
+    path('music/', include('music.urls')),
+    path('geeks/', include('geeks.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
+    
 
 
 ]

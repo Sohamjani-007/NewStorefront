@@ -11,6 +11,9 @@ import calendar
 
 
 def get_json_data():
+    '''Demonstrates conversation from xml 
+to get json data and parse it successfully.'''
+
     xml_data = """<INProfileResponse>
     <Header>
     <SystemCode>0</SystemCode>
@@ -2857,8 +2860,8 @@ def get_json_data():
     </INProfileResponse>"""
     json_data = json.loads(json.dumps(xmltodict.parse(xml_input=xml_data)))
     return json_data
-
-
+    
+# sample_response = json_data which a now a variable.
 sample_response = {
     "INProfileResponse": {
         "Header": {
@@ -2945,7 +2948,7 @@ sample_response = {
                     "CreditAccountActive": "7",
                     "CreditAccountDefault": "0",
                     "CreditAccountClosed": "1",
-                    "CADSuitFiledCurrentBalance": "0"
+                    "CADSuitFiledCurrentBalance": "0",
                 },
                 "Total_Outstanding_Balance": {
                     "Outstanding_Balance_Secured": "195000",  # secured_currnt
@@ -5732,8 +5735,24 @@ sample_response = {
 
 
 def get_payment_history(input_data):
-    # define a fuction for key
+    """ 
+    Empty list is given to append output_dict.
+
+    For loop:
+        To make grouping of year by groupby method.
+
+      For loop:
+       Includes all month names in lower().
+       Finally appended.
+
+    Month names starting from jan [1:] Index=1.  
+    Added into list,  empty list final_output.
+    if month_short_name != days_past_due , add 0.
+    Added into final_output and return it.
+    """
+    
     def key_func(k):
+        
         return k['Year']
 
     output_data_v1 = []
@@ -5747,25 +5766,40 @@ def get_payment_history(input_data):
             output_dict[str(month_name)] = days_past_due
         output_data_v1.append(output_dict)
 
-    # monthnames starting from jan [1:] Index=1
+   
     month_long_name_list = calendar.month_name[1:]
-    month_short_name_list = list()  # created empty list
+    month_short_name_list = list()  
     for month_long_name in month_long_name_list:
         short_name = datetime.datetime.strptime(month_long_name, '%B').strftime(
-            '%b').lower()  # converted to short_name and lower() letters
-        month_short_name_list.append(short_name)  # added into list
+            '%b').lower()   
+        month_short_name_list.append(short_name)  
 
-    final_output = []  # empty list
-    for output_data_dict in output_data_v1:  # in above
+    final_output = []  
+    for output_data_dict in output_data_v1: 
         for month_short_name in month_short_name_list:
             if month_short_name not in output_data_dict.keys():
-                # if month_short_name != days_past_due , add 0
+                
                 output_data_dict[month_short_name] = "0"
-        final_output.append(output_data_dict)  # added into final_output
+        final_output.append(output_data_dict)   
     return final_output
 
 
 def convert_to_html_request():
+    """
+    Summary line.  
+    Extended description of json_data.
+  
+    Parameters:
+    request_data = Description of INProfileResponse.
+    Other parameters are taken within INProfileResponse,
+    nested dictionaries.
+
+    The variable for caps_credit_account still remains unknown.
+
+    Parameters:
+    CAPS_Summary -> Dictionary inside CAPS.
+    And ViseVersa for all nested dictionaries inside their particular roles. 
+    """
     json_data = get_json_data()
     request_data = json_data.get("INProfileResponse")
     score_dict = request_data.get("SCORE")
@@ -5794,20 +5828,29 @@ def convert_to_html_request():
     panid = current_applicant_details.get("IncomeTaxPan")
     ration_num = current_applicant_details.get("Ration_Card_Number")
 
+
+    
     cais_credit_account = request_data.get("CAIS_Account")
     cais_credit_summary = cais_credit_account.get("CAIS_Summary")
     credit_account = cais_credit_summary.get("Credit_Account")
-    credit_total = credit_account.get("CreditAccountTotal")
-    credit_active = credit_account.get("CreditAccountActive")
-    credit_closed = credit_account.get("CreditAccountClosed")
-    credit_suitfiled_current_balance = credit_account.get(
-        "CADSuitFiledCurrentBalance")
-
+    request_dict = dict(
+    credit_total= credit_account.get("CreditAccountTotal"), 
+    credit_active=credit_account.get("CreditAccountActive"), 
+    credit_closed=credit_account.get("CreditAccountClosed"), 
+    credit_settled=credit_account.get("CADSuitFiledCurrentBalance"))
+    def print_dict(request_dict):
+        print_dict(request_dict)
+       
+     
     totalcaps_summary = request_data.get("TotalCAPS_Summary")
-    totalcaps_7days_caps = totalcaps_summary.get("TotalCAPSLast7Days")
-    totalcaps_30days_caps = totalcaps_summary.get("TotalCAPSLast30Days")
-    totalcaps_90days_caps = totalcaps_summary.get("TotalCAPSLast90Days")
-    totalcaps_180days_caps = totalcaps_summary.get("TotalCAPSLast180Days")
+    request_totalcaps = dict(
+    totalcaps_7days_caps = totalcaps_summary.get("TotalCAPSLast7Days"),
+    totalcaps_30days_caps = totalcaps_summary.get("TotalCAPSLast30Days"),
+    totalcaps_90days_caps = totalcaps_summary.get("TotalCAPSLast90Days"),
+    totalcaps_180days_caps = totalcaps_summary.get("TotalCAPSLast180Days"))
+    def totalcaps_dict(request_totalcaps):
+        totalcaps_dict(request_totalcaps)
+        
 
     caps_credit_account = request_data.get("CAPS")  # ?
     caps_summary = caps_credit_account.get("CAPS_Summary")  # ?
@@ -5816,50 +5859,56 @@ def convert_to_html_request():
     caps_summary_90days_caps = caps_summary.get("CAPSLast90Days")  # ?
     caps_summary_180days_caps = caps_summary.get("CAPSLast180Days")  # ?
 
+
+
     cais_noncredit_account = request_data.get("NonCreditCAPS")
-    noncredit_account_summary = cais_noncredit_account.get(
-        "NonCreditCAPS_Summary")
-    noncredit_7days_caps = noncredit_account_summary.get(
-        "NonCreditCAPSLast7Days")
-    noncredit_30days_caps = noncredit_account_summary.get(
-        "NonCreditCAPSLast30Days")
-    noncredit_90days_caps = noncredit_account_summary.get(
-        "NonCreditCAPSLast90Days")
-    noncredit_180days_caps = noncredit_account_summary.get(
-        "NonCreditCAPSLast180Days")
+    noncredit_account_summary = cais_noncredit_account.get("NonCreditCAPS_Summary")
+    noncredit_totalcaps = dict(
+    noncredit_7days_caps = noncredit_account_summary.get("NonCreditCAPSLast7Days"),
+    noncredit_30days_caps = noncredit_account_summary.get("NonCreditCAPSLast30Days"),
+    noncredit_90days_caps = noncredit_account_summary.get("NonCreditCAPSLast90Days"),
+    noncredit_180days_caps = noncredit_account_summary.get("NonCreditCAPSLast180Days"))
+    def noncredit_caps_dict(noncredit_totalcaps):
+        noncredit_caps_dict(noncredit_totalcaps)
+        
+    
 
     credit_account = cais_credit_summary.get("Total_Outstanding_Balance")
-    credit_secured_current = credit_account.get("Outstanding_Balance_Secured")
-    credit_unsecured_current = credit_account.get(
-        "Outstanding_Balance_UnSecured")
-    credit_total_current = credit_account.get("Outstanding_Balance_All")
+    credit_account_dict = dict(
+    credit_secured_current = credit_account.get("Outstanding_Balance_Secured"),
+    credit_unsecured_current = credit_account.get("Outstanding_Balance_UnSecured"),
+    credit_total_current = credit_account.get("Outstanding_Balance_All"))
+    def secured_unsecured(credit_account_dict):
+        secured_unsecured(credit_account_dict)      
+        
+
+
+
+
+
 
     credit_summary_details = cais_credit_account.get("CAIS_Account_DETAILS")
     credit_summary_details_list = []
     for credit_summary_dict in credit_summary_details:
-        new_credit_summary_dict = {
-            # credit_lender given in both
-            "credit_lender": credit_summary_dict.get("Subscriber_Name"),
-            # credit_acctnum given in both
-            "credit_acctnum": credit_summary_dict.get("Account_Number"),
-            # credit_type given in both
-            "credit_type": credit_summary_dict.get("Account_Type"),
-            # credit_opendate given in both
-            "credit_dateopen": credit_summary_dict.get("Open_Date"),
-            # credit_sanct_highest and credit_highest both are same. given in both
-            "credit_highest": credit_summary_dict.get("Highest_Credit_or_Original_Loan_Amount"),
-            # credit_accntstatus 53
-            "credit_accnt_status": credit_summary_dict.get("Account_Status"),
-            # credit_currentbalance given in both
-            "credit_current_balance": credit_summary_dict.get("Current_Balance"),
-            # credit_ammntoverdue given in both
-            "credit_amt_overdue": credit_summary_dict.get("Amount_Past_Due"),
-            # credit_datereported given in both.
-            "credit_date_reported": credit_summary_dict.get("Date_Reported"),
-            # credit_sanct_highest
-            "credit_sanct_highest": credit_summary_dict.get("Highest_Credit_or_Original_Loan_Amount")
+        new_credit_summary_dict = dict(
+            credit_lender = credit_summary_dict.get("Subscriber_Name"), 
+            credit_acctnum = credit_summary_dict.get("Account_Number"),          
+            credit_type = credit_summary_dict.get("Account_Type"),            
+            credit_dateopen = credit_summary_dict.get("Open_Date"),         
+            credit_highest = credit_summary_dict.get("Highest_Credit_or_Original_Loan_Amount"),            
+            credit_accntstatus = credit_summary_dict.get("Account_Status"),          
+            credit_current_balance = credit_summary_dict.get("Current_Balance"),           
+            credit_ammntoverdue = credit_summary_dict.get("Amount_Past_Due"),           
+            credit_datereported = credit_summary_dict.get("Date_Reported"),      
+            credit_sanct_highest = credit_summary_dict.get("Highest_Credit_or_Original_Loan_Amount"))
+        def summary_dict(new_credit_summary_dict):
+            summary_dict(new_credit_summary_dict)
+            
 
-        },
+        
+
+
+
 
         credit_acct_information = cais_credit_account.get("CAIS_Account_DETAILS")
         credit_cais_details_list = []
@@ -5869,32 +5918,39 @@ def convert_to_html_request():
             credit_holderaddress_details = credit_cais_dict.get("CAIS_Holder_Address_Details")
             credit_holderphone_details = credit_cais_dict.get("CAIS_Holder_Phone_Details") 
             
+
+           
+            header = dict(
+                credit_accounts = credit_holder_details.get("Acct 1"),
+                credit_lender = credit_holder_details.get("Subscriber_Name"),
+                name = credit_holder_details.get("Surname_Non_Normalized"),
+                address1 = credit_holderaddress_details.get("First_Line_Of_Address_non_normalized"),
+            )
+            def acct_info_header(header):
+                acct_info_header(header)
+
+
+
+            credit_account_details_dict = dict(
+                credit_dateclose = credit_cais_dict.get("Date_Closed"),
+                suitfiled_wil_def_writeoff_status = credit_cais_dict.get("SuitFiledWillfulDefaultWrittenOffStatus"),
+                credit_written_status = credit_cais_dict.get("Written_off_Settled_Status"),
+                credit_voc = credit_cais_dict.get("Value_of_Collateral"),
+                credit_toc = credit_cais_dict.get("Type_of_Collateral"),
+                credit_roi = credit_cais_dict.get("Rate_of_Interest"),
+                credit_repay_tenure = credit_cais_dict.get("Repayment_Tenure"),
+                credit_limit_amt = credit_cais_dict.get("Credit_Limit_Amount"),
+                credit_settlement_amt = credit_cais_dict.get("Settlement_Amount"),
+                credit_principle_writeoff = credit_cais_dict.get("Written_Off_Amt_Principal"),
+                credit_total_writeoff_amt = credit_cais_dict.get("Written_Off_Amt_Total"),
+                credit_emi = credit_cais_dict.get(""),
+                credit_willfull_default = credit_cais_dict.get(""), # ?
+                consumer_occupation = credit_cais_dict.get("Occupation_Code"),
+                credit_last_paymt_date = credit_cais_dict.get("Date_of_Last_Payment")
+            )
+            def acct_details(credit_account_details_dict):
+                acct_details(credit_account_details_dict)
             
-            header = {
-                "credit_accounts": credit_holder_details.get("Acct 1"),
-                "bank_name": credit_holder_details.get("Subscriber_Name"),
-                "name": credit_holder_details.get("Surname_Non_Normalized"),
-                "address1": credit_holderaddress_details.get("First_Line_Of_Address_non_normalized"),
-                }
-            credit_account_details_dict = {
-                "credit_dateclose": credit_cais_dict.get("Date_Closed"),
-                "suitfiled_wil_def_writeoff_status": credit_cais_dict.get("SuitFiledWillfulDefaultWrittenOffStatus"),
-                "credit_written_status": credit_cais_dict.get("Written_off_Settled_Status"),
-                "credit_voc": credit_cais_dict.get("Value_of_Collateral"),
-                "credit_toc": credit_cais_dict.get("Type_of_Collateral"),
-                "credit_roi": credit_cais_dict.get("Rate_of_Interest"),
-                "credit_repay_tenure": credit_cais_dict.get("Repayment_Tenure"),
-                "credit_limit_amt": credit_cais_dict.get("Credit_Limit_Amount"),
-                "credit_settlement_amt": credit_cais_dict.get("Settlement_Amount"),
-                "credit_principle_writeoff": credit_cais_dict.get("Written_Off_Amt_Principal"),
-                "credit_total_writeoff_amt": credit_cais_dict.get("Written_Off_Amt_Total"),
-                "credit_emi": credit_cais_dict.get(""),
-                "credit_willfull_default": credit_cais_dict.get(""), # ?
-                "consumer_occupation": credit_cais_dict.get("Occupation_Code"),
-                "credit_last_paymt_date": credit_cais_dict.get("Date_of_Last_Payment")
-            }
-
-
 
 
 
@@ -5903,73 +5959,75 @@ def convert_to_html_request():
                 payment_history = get_payment_history(payment_history_data)
             else:
                 payment_history = get_payment_history([payment_history_data])
+            def payment_dict(payment_history):                
+                payment_dict(payment_history)
 
 
 
 
             if (all(isinstance(i, dict)for i in [credit_holder_details, credit_holderid_details, credit_holderaddress_details, credit_holderphone_details])):
-                consumer_details_credit_accnt_dict = {
-                    "consumer_dob": credit_holder_details.get("Date_of_birth"),
-                    "consumer_gender": credit_holder_details.get("Gender_Code"),
-                    "consumer_occupation": credit_holder_details.get("Occupation_Code"), # ?
-                    "consumer_address": credit_holderaddress_details.get("First_Line_Of_Address_non_normalized"),
-                    "consumer_mob1": credit_holderphone_details.get("Telephone_Number"),
-                    "consumer_ptype1": credit_holderphone_details.get("Telephone_Type"),
-                    "consumer_extent1": credit_holderphone_details.get("Telephone_Extension"),
-                    "consumer_pnum1": credit_holderphone_details.get("Mobile_Telephone_Number"),
-                    "consumer_panid": credit_holderid_details.get("Income_TAX_PAN"),
-                    "consumer_pan_doi": credit_holderid_details.get("PAN_Issue_Date"),
-                    "consumer_pan_doe": credit_holderid_details.get("PAN_Expiration_Date"),
-                    "consumer_passprtid": credit_holderid_details.get("Passport_Number"),
-                    "consumer_passprt_doi": credit_holderid_details.get("Passport_Issue_Date"),
-                    "consumer_passprt_doe": credit_holderid_details.get("Passport_Expiration_Date"),
-                    "consumer_voterid": credit_holderid_details.get("Voter_ID_Number"),
-                    "consumer_voter_doi": credit_holderid_details.get("Voter_ID_Issue_Date"),
-                    "consumer_voter_doe": credit_holderid_details.get("Voter_ID_Expiration_Date"),
-                    "consumer_adhrid": credit_holderid_details.get("Universal_ID_Number"),
-                    "consumer_adhr_doi": credit_holderid_details.get("Universal_ID_Issue_Date"),
-                    "consumer_adhr_doe": credit_holderid_details.get("Universal_ID_Expiration_Date"),
-                    "consumer_drivinid": credit_holderid_details.get("Driver_License_Number"),
-                    "consumer_drivin_doi": credit_holderid_details.get("Driver_License_Issue_Date"),
-                    "consumer_drivin_doe": credit_holderid_details.get("Driver_License_Expiration_Date"),
-                    "consumer_rationid": credit_holderid_details.get("Ration_Card_Number"),
-                    "consumer_ration_doi": credit_holderid_details.get("Ration_Card_Issue_Date"),
-                    "consumer_ration_doe": credit_holderid_details.get("Ration_Card_Expiration_Date")
-                }
+                consumer_details_credit_accnt_dict = dict(
+                    consumer_dob = credit_holder_details.get("Date_of_birth"),
+                    consumer_gender = credit_holder_details.get("Gender_Code"),
+                    consumer_occupation = credit_holder_details.get("Occupation_Code"), # ?
+                    consumer_address = credit_holderaddress_details.get("First_Line_Of_Address_non_normalized"),
+                    consumer_mob1 = credit_holderphone_details.get("Telephone_Number"),
+                    consumer_ptype1 = credit_holderphone_details.get("Telephone_Type"),
+                    consumer_extent1 = credit_holderphone_details.get("Telephone_Extension"),
+                    consumer_pnum1 = credit_holderphone_details.get("Mobile_Telephone_Number"),
+                    consumer_panid = credit_holderid_details.get("Income_TAX_PAN"),
+                    consumer_pan_doi = credit_holderid_details.get("PAN_Issue_Date"),
+                    consumer_pan_doe = credit_holderid_details.get("PAN_Expiration_Date"),
+                    consumer_passprtid = credit_holderid_details.get("Passport_Number"),
+                    consumer_passprt_doi = credit_holderid_details.get("Passport_Issue_Date"),
+                    consumer_passprt_doe = credit_holderid_details.get("Passport_Expiration_Date"),
+                    consumer_voterid = credit_holderid_details.get("Voter_ID_Number"),
+                    consumer_voter_doi = credit_holderid_details.get("Voter_ID_Issue_Date"),
+                    consumer_voter_doe = credit_holderid_details.get("Voter_ID_Expiration_Date"),
+                    consumer_adhrid = credit_holderid_details.get("Universal_ID_Number"),
+                    consumer_adhr_doi = credit_holderid_details.get("Universal_ID_Issue_Date"),
+                    consumer_adhr_doe = credit_holderid_details.get("Universal_ID_Expiration_Date"),
+                    consumer_drivinid = credit_holderid_details.get("Driver_License_Number"),
+                    consumer_drivin_doi = credit_holderid_details.get("Driver_License_Issue_Date"),
+                    consumer_drivin_doe = credit_holderid_details.get("Driver_License_Expiration_Date"),
+                    consumer_rationid = credit_holderid_details.get("Ration_Card_Number"),
+                    consumer_ration_doi = credit_holderid_details.get("Ration_Card_Issue_Date"),
+                    consumer_ration_doe = credit_holderid_details.get("Ration_Card_Expiration_Date")
+                )
             elif (all(isinstance(i, list)for i in [credit_holder_details, credit_holderid_details, credit_holderaddress_details, credit_holderphone_details])):
                 for holder_id_details_dict in credit_holderid_details:
-                    consumer_details_credit_accnt_dict = {
-                        "consumer_dob": credit_holder_details.get("Date_of_birth"),
-                        "consumer_gender": credit_holder_details.get("Gender_Code"),
-                        "consumer_occupation": credit_holder_details.get("Occupation_Code"), # ?
-                        "consumer_address": credit_holderaddress_details.get("First_Line_Of_Address_non_normalized"),
-                        "consumer_mob1": credit_holderphone_details.get("Telephone_Number"),
-                        "consumer_ptype1": credit_holderphone_details.get("Telephone_Type"),
-                        "consumer_extent1": credit_holderphone_details.get("Telephone_Extension"),
-                        "consumer_pnum1": credit_holderphone_details.get("Mobile_Telephone_Number"),
-                        "consumer_panid": holder_id_details_dict.get("Income_TAX_PAN"),
-                        "consumer_pan_doi": holder_id_details_dict.get("PAN_Issue_Date"),
-                        "consumer_pan_doe": holder_id_details_dict.get("PAN_Expiration_Date"),
-                        "consumer_passprtid": holder_id_details_dict.get("Passport_Number"),
-                        "consumer_passprt_doi": holder_id_details_dict.get("Passport_Issue_Date"),
-                        "consumer_passprt_doe": holder_id_details_dict.get("Passport_Expiration_Date"),
-                        "consumer_voterid": holder_id_details_dict.get("Voter_ID_Number"),
-                        "consumer_voter_doi": holder_id_details_dict.get("Voter_ID_Issue_Date"),
-                        "consumer_voter_doe": holder_id_details_dict.get("Voter_ID_Expiration_Date"),
-                        "consumer_adhrid": holder_id_details_dict.get("Universal_ID_Number"),
-                        "consumer_adhr_doi": holder_id_details_dict.get("Universal_ID_Issue_Date"),
-                        "consumer_adhr_doe": holder_id_details_dict.get("Universal_ID_Expiration_Date"),
-                        "consumer_drivinid": holder_id_details_dict.get("Driver_License_Number"),
-                        "consumer_drivin_doi": holder_id_details_dict.get("Driver_License_Issue_Date"),
-                        "consumer_drivin_doe": holder_id_details_dict.get("Driver_License_Expiration_Date"),
-                        "consumer_rationid": holder_id_details_dict.get("Ration_Card_Number"),
-                        "consumer_ration_doi": holder_id_details_dict.get("Ration_Card_Issue_Date"),
-                        "consumer_ration_doe": holder_id_details_dict.get("Ration_Card_Expiration_Date")
-                    }
-
-
-
-
+                    consumer_details_credit_accnt_dict = dict(
+                        consumer_dob = credit_holder_details.get("Date_of_birth"),
+                        consumer_gender = credit_holder_details.get("Gender_Code"),
+                        consumer_occupation = credit_holder_details.get("Occupation_Code"), # ?
+                        consumer_address = credit_holderaddress_details.get("First_Line_Of_Address_non_normalized"),
+                        consumer_mob1 = credit_holderphone_details.get("Telephone_Number"),
+                        consumer_ptype1 = credit_holderphone_details.get("Telephone_Type"),
+                        consumer_extent1 = credit_holderphone_details.get("Telephone_Extension"),
+                        consumer_pnum1 = credit_holderphone_details.get("Mobile_Telephone_Number"),
+                        consumer_panid = holder_id_details_dict.get("Income_TAX_PAN"),
+                        consumer_pan_doi = holder_id_details_dict.get("PAN_Issue_Date"),
+                        consumer_pan_doe = holder_id_details_dict.get("PAN_Expiration_Date"),
+                        consumer_passprtid = holder_id_details_dict.get("Passport_Number"),
+                        consumer_passprt_doi = holder_id_details_dict.get("Passport_Issue_Date"),
+                        consumer_passprt_doe = holder_id_details_dict.get("Passport_Expiration_Date"),
+                        consumer_voterid = holder_id_details_dict.get("Voter_ID_Number"),
+                        consumer_voter_doi = holder_id_details_dict.get("Voter_ID_Issue_Date"),
+                        consumer_voter_doe = holder_id_details_dict.get("Voter_ID_Expiration_Date"),
+                        consumer_adhrid = holder_id_details_dict.get("Universal_ID_Number"),
+                        consumer_adhr_doi = holder_id_details_dict.get("Universal_ID_Issue_Date"),
+                        consumer_adhr_doe = holder_id_details_dict.get("Universal_ID_Expiration_Date"),
+                        consumer_drivinid = holder_id_details_dict.get("Driver_License_Number"),
+                        consumer_drivin_doi = holder_id_details_dict.get("Driver_License_Issue_Date"),
+                        consumer_drivin_doe = holder_id_details_dict.get("Driver_License_Expiration_Date"),
+                        consumer_rationid = holder_id_details_dict.get("Ration_Card_Number"),
+                        consumer_ration_doi = holder_id_details_dict.get("Ration_Card_Issue_Date"),
+                        consumer_ration_doe = holder_id_details_dict.get("Ration_Card_Expiration_Date")
+                    )
+            def consumers_details(consumer_details_credit_accnt_dict):
+                consumers_details(consumer_details_credit_accnt_dict)
+                
+            
 
             credit_cais_details_list_updated_dict = {
                 "header": header,
@@ -5982,23 +6040,6 @@ def convert_to_html_request():
         credit_summary_details_list.append(new_credit_summary_dict)
         credit_cais_details_list.append(credit_cais_details_list_updated_dict)
 
-
-
-
-
-
-        # holder_address_details = cais_credit_account.get(
-        #     "CAIS_Account_DETAILS")
-        # for address in holder_address_details:
-        #     cais_holder_address_details = address.get(
-        #         "CAIS_Holder_Address_Details")
-        #     new_address_dict = {
-        #         "address1": cais_holder_address_details.get("First_Line_Of_Address_non_normalized"),
-        #         # ?
-        #         "address2": cais_holder_address_details.get("Second_Line_Of_Address_non_normalized"),
-        #         # ?
-        #         "address3": cais_holder_address_details.get("Third_Line_Of_Address_non_normalized"),
-        #     }
 
 
 
@@ -6028,21 +6069,21 @@ def convert_to_html_request():
 
         },
         "report_summary": {
-            "total_credit": credit_total,
-            "active_credit": credit_active,
-            "closed_credit": credit_closed,
-            "settled_credit": credit_suitfiled_current_balance,
-            "secured_current":  credit_secured_current,
-            "unsecured_current": credit_unsecured_current,
-            "total_current": credit_total_current,
-            "credit_inquiry_7": totalcaps_7days_caps,
-            "credit_inquiry_30": totalcaps_30days_caps,
-            "credit_inquiry_90": totalcaps_90days_caps,
-            "credit_inquiry_180": totalcaps_180days_caps,
-            "noncredit_inquiry_7": noncredit_7days_caps,
-            "noncredit_inquiry_30": noncredit_30days_caps,
-            "noncredit_inquiry_90": noncredit_90days_caps,
-            "noncredit_inquiry_180": noncredit_180days_caps
+            "total_credit": request_dict.get("credit_total"),
+            "active_credit": request_dict.get("credit_active"),
+            "closed_credit": request_dict.get("credit_closed"),
+            "settled_credit": request_dict.get("credit_settled"),
+            "secured_current":  credit_account_dict.get("credit_secured_current"),
+            "unsecured_current": credit_account_dict.get("credit_unsecured_current"),
+            "total_current": credit_account_dict.get("credit_total_current"),
+            "credit_inquiry_7": request_totalcaps.get("totalcaps_7days_caps"),
+            "credit_inquiry_30": request_totalcaps.get("totalcaps_30days_caps"),
+            "credit_inquiry_90": request_totalcaps.get("totalcaps_90days_caps"),
+            "credit_inquiry_180": request_totalcaps.get("totalcaps_180days_caps"),
+            "noncredit_inquiry_7": noncredit_totalcaps.get("noncredit_7days_caps"),
+            "noncredit_inquiry_30": noncredit_totalcaps.get("noncredit_30days_caps"),
+            "noncredit_inquiry_90": noncredit_totalcaps.get("noncredit_90days_caps"),
+            "noncredit_inquiry_180": noncredit_totalcaps.get("noncredit_180days_caps")
 
         },
         "summary_credit_accnts_info": credit_summary_details_list,
@@ -6051,5 +6092,4 @@ def convert_to_html_request():
 
     }]
 
-    # print(credit_cais_details_list)
-    print(html_request, "Well done")
+    print(html_request, "Successfully Done")

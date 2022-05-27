@@ -9,6 +9,13 @@ django-debug-toolbar = "*"
 pep8 = "*"
 jinja2 = "*"
 pylint-django = "*"
+openpyxl = "*"
+xlrd = "*"
+xlwt = "*"
+pyxlsb = "*"
+xlutils = "*"
+xlsxwriter = "*"
+pandas = "*"
 
 [dev-packages]
 autopep8 = "*"

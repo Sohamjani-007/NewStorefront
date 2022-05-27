@@ -1,8 +1,27 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from django.template.loader import get_template
+from store.experian_new import CustomerCreditReport
 
 # Create your views here.
+
+class CustomerCreditReportView():
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Prepare Data
+            credit_report_obj = CustomerCreditReport()
+            json_data = credit_report_obj.get_json_data()
+            context = credit_report_obj.convert_to_html_request(json_data)
+            # Get template
+            template = 'experian_dynamic_report.html'
+            template = get_template(template)
+            # Render template with context data
+            html = template.render(context)
+            return HttpResponse(html)
+        except Exception as e:
+            return HttpResponse(e.__str__() + " Error Getting Credit Report")
+
 def storage(request):
     context = {
         "experian_credit_report": {
@@ -56,22 +75,22 @@ def storage(request):
                                         
         "credit_accnt_information_details": [
             {
-            "header": {"credit_accounts": "Acct 1", "bank_name": "Indian Bank", "name": "Jos Butler", "address1": " England"},
+            "header": {"credit_accounts": "Acct 1","credit_type": "CREDIT CARD", "credit_lender": "Indian Bank", "name": "Jos Butler", "address1": " England"},
             "credit_account_details":   
-            {"credit_account_number": "12345", # Account Number	
-             "credit_dateopen": "23-12-2019", # Date Opened	
+            {"credit_acctnum": "10987645678", # Account Number	
+             "credit_opendate": "23-12-2019", # Date Opened	
              "credit_dateclose": "12-3-2021",# Date Closed	new_credit_cais_dict
              "credit_ownership": "Individual", # Ownership X FIND IT new_credit_cais_dict
              "credit_roi": "9000",# Rate of Interest	new_credit_cais_dict
              "credit_voc": "None",# Value of Collateral	new_credit_cais_dict
              "credit_toc": "none",# Type of Collateral	new_credit_cais_dict
              "suitfiled_wil_def_writeoff_status": "20000", # SuitFiled Willful Default WrittenOff Status	new_credit_cais_dict
-             "credit_date_reported": "21-4-2021",# Date Reported	new_credit_cais_dict
+             "credit_datereported": "21-4-2021",# Date Reported	new_credit_cais_dict
              "credit_loan_type": "CREDIT CARD",# Loan Type	
-             "credit_accnt_status": "SD/WO/WD/SETTLED", # Account Status	
-             "credit_highest": "50,000", # Highest Credit	
+             "credit_accntstatus": "SD/WO/WD/SETTLED", # Account Status	
+             "credit_sanct_highest": "50,000", # Highest Credit	
              "credit_current_balance": "12,000", # Current Balance	
-             "credit_amt_overdue": "2,450",# Amount Overdue	
+             "credit_ammntoverdue": "2,450",# Amount Overdue	
              "credit_last_paymt_date": "16-3-2020", # Last Payment Date	new_credit_cais_dict
              "credit_willfull_default": "None", # SuitFiled Willful Default	new_credit_cais_dict
              "credit_limit_amt": "2000", # Credit Limit Amt new_credit_cais_dict

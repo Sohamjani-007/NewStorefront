@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>User Registration</title>
+    <title>Product Registration</title>
 </head>
 <body>
  <form action="" method="POST" novalidate>
-     {% csrf_token %}
-      {{ name }}
-      {{ fav_sport }}
+    {% csrf_token %}
+    {{ product_price }}
+    {{ product_name }}
       <input type="submit" value="Submit">
  </form>
 </body>

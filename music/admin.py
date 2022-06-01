@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import Album, Product, Song, Contact
+from django.http import HttpResponse
+from .models import Album, Product, Song, Contact, MyModel
+import xlwt
+from .views import export_xlsx
+
 
 # Register your models here.
 
@@ -13,8 +17,14 @@ class SongAdmin(admin.ModelAdmin):
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'contact', 'content')
+    list_display = ('name', 'details','email', 'address', 'fav_sport', 'content')
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('product_name', 'product_price')
+
+
+class MyModelAdmin(admin.ModelAdmin):
+    actions = [export_xlsx]
+    list_display = ('title', 'description')
+admin.site.register(MyModel, MyModelAdmin)

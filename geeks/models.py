@@ -1,4 +1,6 @@
 from django.db import models
+from datetime import datetime
+
 
 # Create your models here.
 # import the standard Django Model
@@ -16,7 +18,7 @@ class Event(models.Model):
 class GeeksModel(models.Model):
 	# fields of the model
 	title = models.CharField(max_length = 200)
-	description = models.TextField()
+	biography = models.TextField()
 
 	# renames the instances of the model
 	# with their title name

@@ -1,9 +1,9 @@
 from django.urls import path
-from . import views
+from . import views, admin
 
 urlpatterns = [
     path('userregistration/', views.showformdata),
-    path('productregistration/', views.product_data),
-    path('music/excel_home', views.export_abc_xlsx, name='export_excel'),
+    path('my_model/', views.export_xlsx),
+    path('product_registration/', views.product_data),
 
 ]

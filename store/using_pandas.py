@@ -312,7 +312,7 @@ import xlwt
 
 class ExcelOperation:
     def read_excel(self):
-            workbook = xlrd.open_workbook('/home/oto/Desktop/Project/django-projects/storefront/xlwt_save.xlsx',on_demand=True)
+            workbook = xlrd.open_workbook('/home/oto/Desktop/Project/django-projects/storefront/xlwt_save01.xlsx',on_demand=True)
             worksheet = workbook.sheet_by_index(0)
             read_data_list = list()
             for row in range(1, worksheet.nrows):
@@ -325,8 +325,8 @@ class ExcelOperation:
     def write_excel(self, input_data):
             worksheet = xlwt.Workbook()
             sheet = worksheet.add_sheet('data_multiple_by_ten')
-            sheet.write(0, 0, 'A1')
-            sheet.write(0, 1, 'A2')
+            sheet.write(0, 0, 'Soham')
+            sheet.write(0, 1, 'Jani')
             i = 1
             for input_value in input_data:
                 j = 0

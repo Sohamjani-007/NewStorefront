@@ -16,6 +16,7 @@ pyxlsb = "*"
 xlutils = "*"
 xlsxwriter = "*"
 pandas = "*"
+django-import-export = "*"
 
 [dev-packages]
 autopep8 = "*"

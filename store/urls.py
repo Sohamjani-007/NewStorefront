@@ -8,3 +8,5 @@ urlpatterns = [
     path('test/', views.storage),
     path('experian_dynamic_report/', views.storage)
 ]
+
+

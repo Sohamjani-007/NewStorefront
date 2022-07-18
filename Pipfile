@@ -17,6 +17,10 @@ xlutils = "*"
 xlsxwriter = "*"
 pandas = "*"
 django-import-export = "*"
+mysql-connector-python = "*"
+excel2json-3 = "*"
+djangorestframework = "*"
+ipdb = "*"
 
 [dev-packages]
 autopep8 = "*"

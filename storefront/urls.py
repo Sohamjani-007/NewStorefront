@@ -23,6 +23,7 @@ urlpatterns = [
     path('store/', include('store.urls')),
     path('music/', include('music.urls')),
     path('geeks/', include('geeks.urls')),
+    path('likes/', include('likes.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
     
 

@@ -21,6 +21,7 @@ mysql-connector-python = "*"
 excel2json-3 = "*"
 djangorestframework = "*"
 ipdb = "*"
+django-model-utils = "*"
 
 [dev-packages]
 autopep8 = "*"
